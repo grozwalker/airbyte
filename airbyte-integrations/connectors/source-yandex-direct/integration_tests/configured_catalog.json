@@ -171,6 +171,9 @@
             "Cost": {
               "type": "integer"
             },
+            "Ctr": {
+              "type": "string"
+            },
             "Impressions": {
               "type": "integer"
             }

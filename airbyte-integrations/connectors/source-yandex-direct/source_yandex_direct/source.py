@@ -395,6 +395,7 @@ class Costs(YandexDirectStream):
                     "CampaignType",
                     "Clicks",
                     "Cost",
+                    "Ctr",
                     "Impressions"
                 ],
                 "Format": "TSV",
