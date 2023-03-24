@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "type": {
+      "type": "string"
+    },
+    "stats": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "string"
+          },
+          "spent": {
+            "type": "string"
+          },
+          "impressions": {
+            "type": "integer"
+          },
+          "clicks": {
+            "type": "integer"
+          },
+          "reach": {
+            "type": "integer"
+          },
+          "uniq_views_count": {
+            "type": "integer"
+          },
+          "link_external_clicks": {
+            "type": "string"
+          },
+          "effective_cost_per_click": {
+            "type": "string"
+          },
+          "effective_cost_per_mille": {
+            "type": "string"
+          },
+          "ctr": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

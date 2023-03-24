@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": ["integer"]
+    },
+    "campaign_id": {
+      "type": ["integer"]
+    },
+    "name": {
+      "type": ["string"]
+    },
+    "status": {
+      "type": ["integer"]
+    },
+    "ad_format": {
+      "type": ["integer"]
+    }
+  }
+}

@@ -1,0 +1,149 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "statistics",
+        "json_schema": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "stats": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "day": {
+                  "type": ["string"]
+                },
+                "spent": {
+                  "type": ["string"]
+                },
+                "impressions": {
+                  "type": "integer"
+                },
+                "clicks": {
+                  "type": "integer"
+                },
+                "reach": {
+                  "type": "integer"
+                },
+                "uniq_views_count": {
+                  "type": "integer"
+                },
+                "link_external_clicks": {
+                  "type": "integer"
+                },
+                "effective_cost_per_click": {
+                  "type": "string"
+                },
+                "effective_cost_per_mille": {
+                  "type": "string"
+                },
+                "ctr": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "supported_sync_modes": ["full_refresh"]
+      },
+      "sync_mode": "full_refresh",
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "campaigns",
+        "json_schema": {
+          "id": {
+            "type": ["integer"]
+          },
+          "name": {
+            "type": ["string"]
+          },
+          "type": {
+            "type": ["string"]
+          }
+        },
+        "supported_sync_modes": ["full_refresh"]
+      },
+      "sync_mode": "full_refresh",
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "ads",
+        "json_schema": {
+          "id": {
+            "type": ["integer"]
+          },
+          "campaign_id": {
+            "type": ["integer"]
+          },
+          "name": {
+            "type": ["string"]
+          },
+          "status": {
+            "type": ["integer"]
+          },
+          "ad_format": {
+            "type": ["integer"]
+          }
+        },
+        "supported_sync_modes": ["full_refresh"]
+      },
+      "sync_mode": "full_refresh",
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "ad_layouts",
+        "json_schema": {
+          "id": {
+            "type": "integer"
+          },
+          "campaign_id": {
+            "type": "integer"
+          },
+          "goal_type": {
+            "type": "integer"
+          },
+          "cost_type": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "link_url": {
+            "type": "string"
+          },
+          "preview_link": {
+            "type": "string"
+          }
+        },
+        "supported_sync_modes": ["full_refresh"]
+      },
+      "sync_mode": "full_refresh",
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "walls",
+        "json_schema": {
+          "url": {
+            "type": ["string"]
+          },
+          "text": {
+            "type": ["string"]
+          }
+        },
+        "supported_sync_modes": ["full_refresh"]
+      },
+      "sync_mode": "full_refresh",
+      "destination_sync_mode": "overwrite"
+    }
+  ]
+}

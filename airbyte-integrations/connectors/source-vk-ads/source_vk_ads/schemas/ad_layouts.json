@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "campaign_id": {
+      "type": "integer"
+    },
+    "goal_type": {
+      "type": "integer"
+    },
+    "cost_type": {
+      "type": "integer"
+    },
+    "title": {
+      "type": "string"
+    },
+    "link_url": {
+      "type": "string"
+    },
+    "preview_link": {
+      "type": "string"
+    }
+  }
+}
