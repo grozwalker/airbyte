@@ -105,6 +105,20 @@
                     }
                   }
                 }
+              },
+              "loss_reason": {
+                "type": "array",
+                "items": {
+                  "type": ["object", "null"],
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
               }
             }
           }
