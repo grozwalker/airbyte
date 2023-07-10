@@ -22,9 +22,14 @@ class AmocrmStream(HttpStream, ABC):
         if response.status_code == 204:
             return {}
 
-        return {
-            'page': response.json()['_page'] + 1
-        }
+        next_page = response.json().get('_page')
+
+        if next_page:
+            return {
+                'page': next_page + 1
+            }
+
+        return None
 
     def parse_response(self, response: requests.Response, **kwargs) -> Iterable[Mapping]:
         if response.status_code == 204:
@@ -88,6 +93,6 @@ class SourceAmocrm(AbstractSource):
             token_refresh_endpoint="https://hexlet.amocrm.ru/oauth2/access_token",
         )
         return [
+            Pipelines(authenticator=auth),
             Leads(authenticator=auth),
-            Pipelines(authenticator=auth)
         ]
