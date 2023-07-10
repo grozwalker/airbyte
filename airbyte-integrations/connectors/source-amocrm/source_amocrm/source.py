@@ -26,19 +26,6 @@ class AmocrmStream(HttpStream, ABC):
             'page': response.json()['_page'] + 1
         }
 
-    def request_params(
-        self, stream_state: Mapping[str, Any], stream_slice: Mapping[str, any] = None, next_page_token: Mapping[str, Any] = None
-    ) -> MutableMapping[str, Any]:
-        params = {
-            'limit': 250,
-            'with': 'contacts,loss_reason'
-        }
-
-        if next_page_token:
-            params.update(**next_page_token)
-
-        return params
-
     def parse_response(self, response: requests.Response, **kwargs) -> Iterable[Mapping]:
         if response.status_code == 204:
             return []
@@ -54,6 +41,19 @@ class Leads(AmocrmStream):
         self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
     ) -> str:
         return "leads"
+
+    def request_params(
+        self, stream_state: Mapping[str, Any], stream_slice: Mapping[str, any] = None, next_page_token: Mapping[str, Any] = None
+    ) -> MutableMapping[str, Any]:
+        params = {
+            'limit': 250,
+            'with': 'contacts,loss_reason'
+        }
+
+        if next_page_token:
+            params.update(**next_page_token)
+
+        return params
 
 class Pipelines(AmocrmStream):
     primary_key = "id"
