@@ -88,5 +88,6 @@ class SourceAmocrm(AbstractSource):
             token_refresh_endpoint="https://hexlet.amocrm.ru/oauth2/access_token",
         )
         return [
-            Leads(authenticator=auth)
+            Leads(authenticator=auth),
+            Pipelines(authenticator=auth)
         ]

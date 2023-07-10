@@ -127,6 +127,53 @@
       },
       "sync_mode": "full_refresh",
       "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "pipelines",
+        "json_schema": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "is_main": {
+            "type": "boolean"
+          },
+          "is_archive": {
+            "type": "boolean"
+          },
+          "account_id": {
+            "type": "integer"
+          },
+          "_embedded": {
+            "type": "object",
+            "properties": {
+              "statuses": {
+                "type": "array",
+                "items": {
+                  "type": ["object", "null"],
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "pipeline_id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "supported_sync_modes": ["full_refresh"]
+      },
+      "sync_mode": "full_refresh",
+      "destination_sync_mode": "overwrite"
     }
   ]
 }
