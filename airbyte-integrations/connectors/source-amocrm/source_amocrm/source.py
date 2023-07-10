@@ -55,6 +55,14 @@ class Leads(AmocrmStream):
     ) -> str:
         return "leads"
 
+class Pipelines(AmocrmStream):
+    primary_key = "id"
+
+    def path(
+        self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
+    ) -> str:
+        return "pipelines"
+
 # Source
 class SourceAmocrm(AbstractSource):
     def check_connection(self, logger, config) -> Tuple[bool, any]:
