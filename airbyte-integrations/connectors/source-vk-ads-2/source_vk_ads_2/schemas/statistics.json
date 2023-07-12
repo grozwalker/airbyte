@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "date": {
+              "type": "string"
+            },
+            "base": {
+              "type": "object",
+              "properties": {
+                "shows": {
+                  "type": "integer"
+                },
+                "clicks": {
+                  "type": "integer"
+                },
+                "goals": {
+                  "type": "integer"
+                },
+                "spent": {
+                  "type": "string"
+                },
+                "cpm": {
+                  "type": "string"
+                },
+                "cpc": {
+                  "type": "string"
+                },
+                "cpa": {
+                  "type": "string"
+                },
+                "ctr": {
+                  "type": "integer"
+                },
+                "cr": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+
+      }
+    },
+    "campaign_id": {
+      "type": "integer"
+    },
+    "ad_group_id": {
+      "type": "integer"
+    },
+    "moderation_status": {
+      "type": "string"
+    }
+  }
+}

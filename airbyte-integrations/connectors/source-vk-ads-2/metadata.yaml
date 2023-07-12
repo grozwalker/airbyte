@@ -1,0 +1,22 @@
+data:
+  allowedHosts:
+    hosts:
+      - TODO # Please change to the hostname of the source.
+  registries:
+    oss:
+      enabled: false
+  connectorSubtype: api
+  connectorType: source
+  definitionId: 01a35fce-5bfb-4961-8f9e-5a3194a8f1de
+  dockerImageTag: 0.1.0
+  dockerRepository: airbyte/source-vk-ads-2
+  githubIssueLabel: source-vk-ads-2
+  icon: vk-ads-2.svg
+  license: MIT
+  name: Vk Ads 2
+  releaseDate: TODO
+  releaseStage: alpha
+  documentationUrl: https://docs.airbyte.com/integrations/sources/vk-ads-2
+  tags:
+    - language:python
+metadataSpecVersion: "1.0"
