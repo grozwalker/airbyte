@@ -95,8 +95,9 @@ class SourceTiktokMarketing(AbstractSource):
             "access_token": access_token,
             "is_sandbox": is_sandbox,
             "attribution_window": config.get("attribution_window"),
+            "include_deleted": config.get("include_deleted"),
         }
-        
+
         if advertiser_id:
             stream_args.update(**{"advertiser_id": advertiser_id})
 
