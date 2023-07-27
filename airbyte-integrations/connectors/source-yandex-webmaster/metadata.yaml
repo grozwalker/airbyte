@@ -1,0 +1,24 @@
+data:
+  allowedHosts:
+    hosts:
+      - TODO # Please change to the hostname of the source.
+  registries:
+    oss:
+      enabled: false
+    cloud:
+      enabled: false
+  connectorSubtype: api
+  connectorType: source
+  definitionId: e43a85ca-7b48-4cc1-8ff2-9b47982c0713
+  dockerImageTag: 0.1.0
+  dockerRepository: airbyte/source-yandex-webmaster
+  githubIssueLabel: source-yandex-webmaster
+  icon: yandex-webmaster.svg
+  license: MIT
+  name: Yandex Webmaster
+  releaseDate: TODO
+  releaseStage: alpha
+  documentationUrl: https://docs.airbyte.com/integrations/sources/yandex-webmaster
+  tags:
+    - language:lowcode
+metadataSpecVersion: "1.0"

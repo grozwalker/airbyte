@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "sqi": {
+      "type": "integer"
+    },
+    "excluded_pages_count": {
+      "type": "integer"
+    },
+    "searchable_pages_count": {
+      "type": "integer"
+    }
+  }
+}
