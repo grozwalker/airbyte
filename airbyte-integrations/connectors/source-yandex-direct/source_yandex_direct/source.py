@@ -193,7 +193,7 @@ class Ads(HttpSubStream, YandexDirectStream):
             }
         """
 
-        ads = response.json().get("result").get("Ads")
+        ads = response.json().get("result", {}).get("Ads", {})
 
         yield from ads
 
