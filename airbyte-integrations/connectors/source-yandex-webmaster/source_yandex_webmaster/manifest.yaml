@@ -93,10 +93,24 @@ definitions:
     $parameters:
       query_indicator: "TOTAL_CLICKS"
 
+  query_history_avg_show_position_stream:
+    $ref: "#/definitions/base_substream"
+    name: "query_history_avg_show_position_stream"
+    $parameters:
+      query_indicator: "AVG_SHOW_POSITION"
+
+  query_history_avg_click_position_stream:
+    $ref: "#/definitions/base_substream"
+    name: "query_history_avg_click_position_stream"
+    $parameters:
+      query_indicator: "AVG_CLICK_POSITION"
+
 streams:
   - "#/definitions/popular_queries_stream"
   - "#/definitions/query_history_shows_stream"
   - "#/definitions/query_history_clicks_stream"
+  - "#/definitions/query_history_avg_show_position_stream"
+  - "#/definitions/query_history_avg_click_position_stream"
   - "#/definitions/summary_stream"
 
 check:

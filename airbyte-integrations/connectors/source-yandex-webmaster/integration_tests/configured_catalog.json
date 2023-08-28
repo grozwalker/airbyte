@@ -29,6 +29,24 @@
     },
     {
       "stream": {
+        "name": "query_history_avg_show_position_stream",
+        "json_schema": {},
+        "supported_sync_modes": ["full_refresh"]
+      },
+      "sync_mode": "full_refresh",
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
+        "name": "query_history_avg_click_position_stream",
+        "json_schema": {},
+        "supported_sync_modes": ["full_refresh"]
+      },
+      "sync_mode": "full_refresh",
+      "destination_sync_mode": "overwrite"
+    },
+    {
+      "stream": {
         "name": "summary_stream",
         "json_schema": {},
         "supported_sync_modes": ["full_refresh"]
