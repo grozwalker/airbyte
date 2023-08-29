@@ -14,6 +14,7 @@ from airbyte_cdk.sources.streams.http import HttpStream
 from airbyte_cdk.sources.streams.http.auth import TokenAuthenticator
 from airbyte_cdk.sources.streams.http.requests_native_auth.oauth import SingleUseRefreshTokenOauth2Authenticator
 
+
 # Basic full refresh stream
 class AmocrmStream(HttpStream, ABC):
     url_base = "https://hexlet.amocrm.ru/api/v4/"
@@ -22,12 +23,10 @@ class AmocrmStream(HttpStream, ABC):
         if response.status_code == 204:
             return {}
 
-        next_page = response.json().get('_page')
+        next_page = response.json().get("_page")
 
         if next_page:
-            return {
-                'page': next_page + 1
-            }
+            return {"page": next_page + 1}
 
         return None
 
@@ -38,6 +37,7 @@ class AmocrmStream(HttpStream, ABC):
         data = response.json().get("_embedded").get(self.name)
 
         yield from data
+
 
 class Leads(AmocrmStream):
     primary_key = "id"
@@ -50,15 +50,13 @@ class Leads(AmocrmStream):
     def request_params(
         self, stream_state: Mapping[str, Any], stream_slice: Mapping[str, any] = None, next_page_token: Mapping[str, Any] = None
     ) -> MutableMapping[str, Any]:
-        params = {
-            'limit': 250,
-            'with': 'contacts,loss_reason'
-        }
+        params = {"limit": 250, "with": "contacts,loss_reason"}
 
         if next_page_token:
             params.update(**next_page_token)
 
         return params
+
 
 class Pipelines(AmocrmStream):
     primary_key = "id"
@@ -67,6 +65,7 @@ class Pipelines(AmocrmStream):
         self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
     ) -> str:
         return "leads/pipelines"
+
 
 # Source
 class SourceAmocrm(AbstractSource):
@@ -77,9 +76,7 @@ class SourceAmocrm(AbstractSource):
                 config,
                 token_refresh_endpoint="https://hexlet.amocrm.ru/oauth2/access_token",
             )
-            leads_stream = Leads(
-                authenticator=auth
-            )
+            leads_stream = Leads(authenticator=auth)
 
             next(leads_stream.read_records(sync_mode=SyncMode.full_refresh))
 
