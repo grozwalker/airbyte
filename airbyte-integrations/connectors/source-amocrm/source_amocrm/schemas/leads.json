@@ -9,7 +9,7 @@
       "type": "string"
     },
     "price": {
-      "type": ["string", "null"]
+      "type": ["integer", "null"]
     },
     "responsible_user_id": {
       "type": "integer"
@@ -33,7 +33,7 @@
       "type": "integer"
     },
     "labor_cost": {
-      "type": "integer"
+      "type": ["integer", "null"]
     },
     "source_id": {
       "type": ["integer", "null"]
@@ -42,7 +42,7 @@
       "type": "integer"
     },
     "closed_at": {
-      "type": "integer"
+      "type": ["integer", "null"]
     },
     "is_deleted": {
       "type": "boolean"
@@ -59,7 +59,7 @@
             "type": "string"
           },
           "field_code": {
-            "type": "string"
+            "type": ["string", "null"]
           },
           "field_type": {
             "type": "string"
