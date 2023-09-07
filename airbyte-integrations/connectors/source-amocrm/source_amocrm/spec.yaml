@@ -47,3 +47,11 @@ connectionSpecification:
           type: string
           description: "The date-time when the access token should be refreshed"
           order: 4
+    start_date:
+      title: Start Date
+      type: string
+      description: "UTC date in the format YYYY-MM-DD. Any data before this date will not be replicated."
+      pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+      pattern_descriptor: "YYYY-MM-DD"
+      format: date
+      order: 1

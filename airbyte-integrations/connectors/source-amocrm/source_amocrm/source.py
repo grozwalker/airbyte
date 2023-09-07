@@ -7,11 +7,11 @@ from abc import ABC
 from typing import Any, Iterable, List, Mapping, MutableMapping, Optional, Tuple
 
 import requests
+import pendulum
 from airbyte_cdk.models import SyncMode
 from airbyte_cdk.sources import AbstractSource
 from airbyte_cdk.sources.streams import Stream
 from airbyte_cdk.sources.streams.http import HttpStream
-from airbyte_cdk.sources.streams.http.auth import TokenAuthenticator
 from airbyte_cdk.sources.streams.http.requests_native_auth.oauth import SingleUseRefreshTokenOauth2Authenticator
 
 
@@ -23,12 +23,33 @@ class AmocrmStream(HttpStream, ABC):
         if response.status_code == 204:
             return {}
 
+<<<<<<< HEAD
         next_page = response.json().get("_page")
 
         if next_page:
             return {"page": next_page + 1}
+=======
+        current_page = response.json().get('_page')
+
+        if current_page:
+            return {
+                'page': current_page + 1
+            }
+>>>>>>> add events users tasks streams
 
         return None
+
+    def request_params(
+        self,
+        stream_state: Mapping[str, Any],
+        stream_slice: Mapping[str, Any] = None,
+        next_page_token: Mapping[str, Any] = None,
+    ) -> MutableMapping[str, Any]:
+        params = { 'limit': 250 }
+        if next_page_token:
+            params.update(**next_page_token)
+
+        return params
 
     def parse_response(self, response: requests.Response, **kwargs) -> Iterable[Mapping]:
         if response.status_code == 204:
@@ -66,15 +87,76 @@ class Pipelines(AmocrmStream):
     ) -> str:
         return "leads/pipelines"
 
+class Users(AmocrmStream):
+    primary_key = "id"
+
+    def request_params(
+        self,
+        stream_state: Mapping[str, Any],
+        stream_slice: Mapping[str, Any] = None,
+        next_page_token: Mapping[str, Any] = None,
+    ) -> MutableMapping[str, Any]:
+        params = {
+            'limit': 250,
+            'with': 'role,group'
+        }
+
+        if next_page_token:
+            params.update(**next_page_token)
+
+        return params
+
+    def path(
+        self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
+    ) -> str:
+        return "users"
+
+class Tasks(AmocrmStream):
+    primary_key = "id"
+
+    def path(
+        self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
+    ) -> str:
+        return "tasks"
+
+class Events(AmocrmStream):
+    primary_key = "id"
+
+    def __init__(self, config: Mapping[str, Any], **kwargs):
+        super().__init__(**kwargs)
+        self.start_date = config['start_date']
+
+    def request_params(
+        self,
+        stream_state: Mapping[str, Any],
+        stream_slice: Mapping[str, Any] = None,
+        next_page_token: Mapping[str, Any] = None,
+    ) -> MutableMapping[str, Any]:
+        params = {
+            'limit': 250,
+            'filter[created_at]': pendulum.parse(self.start_date).format('X') or ''
+        }
+
+        if next_page_token:
+            params.update(**next_page_token)
+
+        return params
+
+    def path(
+        self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
+    ) -> str:
+        return "events"
 
 # Source
 class SourceAmocrm(AbstractSource):
+    refresh_endpoint = "https://hexlet.amocrm.ru/oauth2/access_token"
+
     def check_connection(self, logger, config) -> Tuple[bool, any]:
         try:
             # Check connectivity
             auth = SingleUseRefreshTokenOauth2Authenticator(
                 config,
-                token_refresh_endpoint="https://hexlet.amocrm.ru/oauth2/access_token",
+                token_refresh_endpoint=self.refresh_endpoint,
             )
             leads_stream = Leads(authenticator=auth)
 
@@ -87,9 +169,12 @@ class SourceAmocrm(AbstractSource):
     def streams(self, config: Mapping[str, Any]) -> List[Stream]:
         auth = SingleUseRefreshTokenOauth2Authenticator(
             config,
-            token_refresh_endpoint="https://hexlet.amocrm.ru/oauth2/access_token",
+            token_refresh_endpoint=self.refresh_endpoint,
         )
         return [
             Pipelines(authenticator=auth),
             Leads(authenticator=auth),
+            Users(authenticator=auth),
+            Tasks(authenticator=auth),
+            Events(authenticator=auth, config=config),
         ]
