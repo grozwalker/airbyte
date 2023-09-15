@@ -8,48 +8,44 @@
     "rows": {
       "type": "array",
       "items": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "date": {
-              "type": "string"
-            },
-            "base": {
-              "type": "object",
-              "properties": {
-                "shows": {
-                  "type": "integer"
-                },
-                "clicks": {
-                  "type": "integer"
-                },
-                "goals": {
-                  "type": "integer"
-                },
-                "spent": {
-                  "type": "string"
-                },
-                "cpm": {
-                  "type": "string"
-                },
-                "cpc": {
-                  "type": "string"
-                },
-                "cpa": {
-                  "type": "string"
-                },
-                "ctr": {
-                  "type": "integer"
-                },
-                "cr": {
-                  "type": "integer"
-                }
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string"
+          },
+          "base": {
+            "type": "object",
+            "properties": {
+              "shows": {
+                "type": ""
+              },
+              "clicks": {
+                "type": "integer"
+              },
+              "goals": {
+                "type": "integer"
+              },
+              "spent": {
+                "type": "number"
+              },
+              "cpm": {
+                "type": "number"
+              },
+              "cpc": {
+                "type": "number"
+              },
+              "cpa": {
+                "type": "number"
+              },
+              "ctr": {
+                "type": "number"
+              },
+              "cr": {
+                "type": "number"
               }
             }
           }
         }
-
       }
     },
     "campaign_id": {

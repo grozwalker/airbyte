@@ -15,7 +15,6 @@ from airbyte_cdk.sources.streams.http.auth import TokenAuthenticator
 
 URL_BASE: str = "https://ads.vk.com/api/v2/"
 
-
 # Basic full refresh stream
 class VkAds_2Stream(HttpStream, ABC):
     url_base = URL_BASE
