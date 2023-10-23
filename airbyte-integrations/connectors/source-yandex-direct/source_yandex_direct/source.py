@@ -151,7 +151,9 @@ class Ads(HttpSubStream, YandexDirectStream):
                     "Type",
                     "Subtype"
                 ],
-                "TextAdFieldNames": ["Href", "Text"]
+                "TextAdFieldNames": ["Href", "Text"],
+                "CpcVideoAdBuilderAdFieldNames": ["Href"],
+                "TextImageAdFieldNames": ["Href"]
             }
         }
 
