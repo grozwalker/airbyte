@@ -47,11 +47,24 @@ connectionSpecification:
           type: string
           description: "The date-time when the access token should be refreshed"
           order: 4
-    start_date:
-      title: Start Date
+    start_date_for_events:
+      title: Start Date For Events
       type: string
       description: "UTC date in the format YYYY-MM-DD. Any data before this date will not be replicated."
       pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
       pattern_descriptor: "YYYY-MM-DD"
       format: date
       order: 1
+    end_date_for_events:
+      title: End Date For Events
+      type: string
+      description: "UTC date in the format YYYY-MM-DD. Any data after this date will not be replicated."
+      pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+      pattern_descriptor: "YYYY-MM-DD"
+      format: date
+      order: 2
+    events:
+      title: Only this events replicates
+      type: string
+      description: "UTC date in the format YYYY-MM-DD. Any data after this date will not be replicated."
+      order: 3
