@@ -6,8 +6,8 @@
 from abc import ABC
 from typing import Any, Iterable, List, Mapping, MutableMapping, Optional, Tuple
 
-import requests
 import pendulum
+import requests
 from airbyte_cdk.models import SyncMode
 from airbyte_cdk.sources import AbstractSource
 from airbyte_cdk.sources.streams import Stream
@@ -23,12 +23,10 @@ class AmocrmStream(HttpStream, ABC):
         if response.status_code == 204:
             return {}
 
-        current_page = response.json().get('_page')
+        current_page = response.json().get("_page")
 
         if current_page:
-            return {
-                'page': current_page + 1
-            }
+            return {"page": current_page + 1}
 
         return None
 
@@ -38,7 +36,7 @@ class AmocrmStream(HttpStream, ABC):
         stream_slice: Mapping[str, Any] = None,
         next_page_token: Mapping[str, Any] = None,
     ) -> MutableMapping[str, Any]:
-        params = { 'limit': 250 }
+        params = {"limit": 250}
         if next_page_token:
             params.update(**next_page_token)
 
@@ -80,6 +78,7 @@ class Pipelines(AmocrmStream):
     ) -> str:
         return "leads/pipelines"
 
+
 class Users(AmocrmStream):
     primary_key = "id"
 
@@ -89,10 +88,7 @@ class Users(AmocrmStream):
         stream_slice: Mapping[str, Any] = None,
         next_page_token: Mapping[str, Any] = None,
     ) -> MutableMapping[str, Any]:
-        params = {
-            'limit': 250,
-            'with': 'role,group'
-        }
+        params = {"limit": 250, "with": "role,group"}
 
         if next_page_token:
             params.update(**next_page_token)
@@ -104,6 +100,7 @@ class Users(AmocrmStream):
     ) -> str:
         return "users"
 
+
 class Tasks(AmocrmStream):
     primary_key = "id"
 
@@ -112,13 +109,14 @@ class Tasks(AmocrmStream):
     ) -> str:
         return "tasks"
 
+
 class Events(AmocrmStream):
     primary_key = "id"
 
     def __init__(self, config: Mapping[str, Any], **kwargs):
         super().__init__(**kwargs)
-        self.start_date_for_events = config['start_date_for_events']
-        self.events = config['events']
+        self.start_date_for_events = config["start_date_for_events"]
+        self.events = config["events"]
 
     def request_params(
         self,
@@ -126,15 +124,12 @@ class Events(AmocrmStream):
         stream_slice: Mapping[str, Any] = None,
         next_page_token: Mapping[str, Any] = None,
     ) -> MutableMapping[str, Any]:
-        params = {
-            'limit': 250,
-            'filter[created_at]': pendulum.parse(self.start_date_for_events).format('X') or ''
-        }
+        params = {"limit": 250, "filter[created_at]": pendulum.parse(self.start_date_for_events).format("X") or ""}
 
         if self.events:
-            events = self.events.replace(" ", "").split(',')
+            events = self.events.replace(" ", "").split(",")
             for idx, event in enumerate(events):
-                params[f'filter[type][{idx}]'] = event
+                params[f"filter[type][{idx}]"] = event
 
         if next_page_token:
             params.update(**next_page_token)
@@ -145,6 +140,7 @@ class Events(AmocrmStream):
         self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
     ) -> str:
         return "events"
+
 
 # Source
 class SourceAmocrm(AbstractSource):
