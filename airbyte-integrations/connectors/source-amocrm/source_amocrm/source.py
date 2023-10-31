@@ -23,19 +23,12 @@ class AmocrmStream(HttpStream, ABC):
         if response.status_code == 204:
             return {}
 
-<<<<<<< HEAD
-        next_page = response.json().get("_page")
-
-        if next_page:
-            return {"page": next_page + 1}
-=======
         current_page = response.json().get('_page')
 
         if current_page:
             return {
                 'page': current_page + 1
             }
->>>>>>> add events users tasks streams
 
         return None
 
@@ -124,7 +117,8 @@ class Events(AmocrmStream):
 
     def __init__(self, config: Mapping[str, Any], **kwargs):
         super().__init__(**kwargs)
-        self.start_date = config['start_date']
+        self.start_date_for_events = config['start_date_for_events']
+        self.events = config['events']
 
     def request_params(
         self,
@@ -134,8 +128,13 @@ class Events(AmocrmStream):
     ) -> MutableMapping[str, Any]:
         params = {
             'limit': 250,
-            'filter[created_at]': pendulum.parse(self.start_date).format('X') or ''
+            'filter[created_at]': pendulum.parse(self.start_date_for_events).format('X') or ''
         }
+
+        if self.events:
+            events = self.events.replace(" ", "").split(',')
+            for idx, event in enumerate(events):
+                params[f'filter[type][{idx}]'] = event
 
         if next_page_token:
             params.update(**next_page_token)
