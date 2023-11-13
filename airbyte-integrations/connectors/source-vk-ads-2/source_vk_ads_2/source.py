@@ -11,7 +11,7 @@ import pendulum
 from airbyte_cdk.sources import AbstractSource
 from airbyte_cdk.sources.streams import Stream
 from airbyte_cdk.sources.streams.http import HttpStream
-from airbyte_cdk.sources.streams.http.auth import TokenAuthenticator
+from airbyte_cdk.sources.streams.http.auth import Oauth2Authenticator
 
 URL_BASE: str = "https://ads.vk.com/api/v2/"
 
@@ -51,7 +51,7 @@ class AdPlans(VkAds_2Stream):
     def path(
         self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
     ) -> str:
-        return "ad_plans.json"
+        return "ad_plans.json?fields=id,created,name,status,ad_object_type"
 
 class AdGroups(VkAds_2Stream):
     primary_key = "id"
@@ -59,7 +59,7 @@ class AdGroups(VkAds_2Stream):
     def path(
         self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
     ) -> str:
-        return "ad_groups.json"
+        return "ad_groups.json?fields=id,created,name,status,ad_plan_id,package_id,utm"
 
 class Banners(VkAds_2Stream):
     primary_key = "id"
@@ -67,7 +67,7 @@ class Banners(VkAds_2Stream):
     def path(
         self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
     ) -> str:
-        return "banners.json"
+        return "banners.json?fields=id,name,status,created,ad_group_id,urls,moderation_status,content"
 
 class Statistics(VkAds_2Stream):
     primary_key = "id"
@@ -75,14 +75,14 @@ class Statistics(VkAds_2Stream):
     def path(
         self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
     ) -> str:
-        return "statistics/ad_plans/day.json"
+        return "statistics/banners/day.json"
 
     def request_params(
         self, stream_state: Mapping[str, Any], stream_slice: Mapping[str, any] = None, next_page_token: Mapping[str, Any] = None
     ) -> MutableMapping[str, Any]:
         return {
-            # "date_from": f"{self.config['start_date']}",
-            "date_from": "2023-07-12",
+            "date_from": f"{self.config['replication_start_date']}",
+            # "date_from": "2023-07-12",
             "date_to": f"{pendulum.today().date()}"
         }
 
@@ -90,12 +90,19 @@ class Statistics(VkAds_2Stream):
 class SourceVkAds_2(AbstractSource):
     def check_connection(self, logger, config) -> Tuple[bool, any]:
         try:
-            auth = TokenAuthenticator(token=config['access_token'])
+            # TODO УБрать из конфига access token
+            authorization = config.get("authorization")
+            oauth = Oauth2Authenticator(
+                token_refresh_endpoint="https://ads.vk.com/api/v2/oauth2/token.json",
+                client_id=authorization["client_id"],
+                client_secret=authorization["client_secret"],
+                refresh_token=authorization["refresh_token"],
+            )
 
             url = f"{URL_BASE}user.json"
             response = requests.get(
                 url,
-                headers=auth.get_auth_header(),
+                headers=oauth.get_auth_header(),
                 timeout=5
             )
 
@@ -108,11 +115,17 @@ class SourceVkAds_2(AbstractSource):
             return False, error
 
     def streams(self, config: Mapping[str, Any]) -> List[Stream]:
-        auth = TokenAuthenticator(token=config['access_token'])
+        authorization = config.get("authorization")
+        oauth = Oauth2Authenticator(
+            token_refresh_endpoint="https://ads.vk.com/api/v2/oauth2/token.json",
+            client_id=authorization["client_id"],
+            client_secret=authorization["client_secret"],
+            refresh_token=authorization["refresh_token"],
+        )
 
         return [
-            AdPlans(authenticator=auth),
-            AdGroups(authenticator=auth),
-            Banners(authenticator=auth),
-            Statistics(authenticator=auth),
+            AdPlans(authenticator=oauth),
+            AdGroups(authenticator=oauth),
+            Banners(authenticator=oauth),
+            Statistics(authenticator=oauth),
         ]

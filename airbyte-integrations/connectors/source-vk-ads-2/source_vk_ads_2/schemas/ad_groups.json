@@ -5,11 +5,23 @@
     "id": {
       "type": "integer"
     },
+    "ad_plan_id": {
+      "type": "integer"
+    },
     "name": {
+      "type": "string"
+    },
+    "status": {
       "type": "string"
     },
     "package_id": {
       "type": "integer"
+    },
+    "created": {
+      "type": "string"
+    },
+    "utm": {
+      "type": "object"
     }
   }
 }

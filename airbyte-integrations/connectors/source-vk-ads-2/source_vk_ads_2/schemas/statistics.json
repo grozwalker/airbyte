@@ -47,15 +47,6 @@
           }
         }
       }
-    },
-    "campaign_id": {
-      "type": "integer"
-    },
-    "ad_group_id": {
-      "type": "integer"
-    },
-    "moderation_status": {
-      "type": "string"
     }
   }
 }
