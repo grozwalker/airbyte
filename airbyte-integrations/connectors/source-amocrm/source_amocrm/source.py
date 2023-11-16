@@ -142,6 +142,14 @@ class Events(AmocrmStream):
         return "events"
 
 
+class Contacts(AmocrmStream):
+    primary_key = "id"
+
+    def path(
+        self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
+    ) -> str:
+        return "contacts"
+
 # Source
 class SourceAmocrm(AbstractSource):
     refresh_endpoint = "https://hexlet.amocrm.ru/oauth2/access_token"
@@ -167,6 +175,7 @@ class SourceAmocrm(AbstractSource):
             token_refresh_endpoint=self.refresh_endpoint,
         )
         return [
+            Contacts(authenticator=auth),
             Pipelines(authenticator=auth),
             Leads(authenticator=auth),
             Users(authenticator=auth),
