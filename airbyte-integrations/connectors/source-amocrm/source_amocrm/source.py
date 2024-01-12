@@ -104,6 +104,26 @@ class Users(AmocrmStream):
 class Tasks(AmocrmStream):
     primary_key = "id"
 
+    def __init__(self, config: Mapping[str, Any], **kwargs):
+        super().__init__(**kwargs)
+        self.start_date_for_replication = config['start_date_for_replication']
+
+    def request_params(
+        self,
+        stream_state: Mapping[str, Any],
+        stream_slice: Mapping[str, Any] = None,
+        next_page_token: Mapping[str, Any] = None,
+    ) -> MutableMapping[str, Any]:
+        params = {
+            'limit': 250,
+            'filter[updated_at]': pendulum.parse(self.start_date_for_replication).format('X') or ''
+        }
+
+        if next_page_token:
+            params.update(**next_page_token)
+
+        return params
+
     def path(
         self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
     ) -> str:
@@ -115,8 +135,8 @@ class Events(AmocrmStream):
 
     def __init__(self, config: Mapping[str, Any], **kwargs):
         super().__init__(**kwargs)
-        self.start_date_for_events = config["start_date_for_events"]
-        self.events = config["events"]
+        self.start_date_for_replication = config['start_date_for_replication']
+        self.events = config.get('events')
 
     def request_params(
         self,
@@ -124,7 +144,10 @@ class Events(AmocrmStream):
         stream_slice: Mapping[str, Any] = None,
         next_page_token: Mapping[str, Any] = None,
     ) -> MutableMapping[str, Any]:
-        params = {"limit": 250, "filter[created_at]": pendulum.parse(self.start_date_for_events).format("X") or ""}
+        params = {
+            'limit': 250,
+            'filter[created_at]': pendulum.parse(self.start_date_for_replication).format('X') or ''
+        }
 
         if self.events:
             events = self.events.replace(" ", "").split(",")
@@ -179,6 +202,6 @@ class SourceAmocrm(AbstractSource):
             Pipelines(authenticator=auth),
             Leads(authenticator=auth),
             Users(authenticator=auth),
-            Tasks(authenticator=auth),
+            Tasks(authenticator=auth, config=config),
             Events(authenticator=auth, config=config),
         ]
