@@ -106,7 +106,7 @@ class Tasks(AmocrmStream):
 
     def __init__(self, config: Mapping[str, Any], **kwargs):
         super().__init__(**kwargs)
-        self.start_date_for_replication = config['start_date_for_replication']
+        self.start_date_for_replication = config["start_date_for_replication"]
 
     def request_params(
         self,
@@ -114,10 +114,7 @@ class Tasks(AmocrmStream):
         stream_slice: Mapping[str, Any] = None,
         next_page_token: Mapping[str, Any] = None,
     ) -> MutableMapping[str, Any]:
-        params = {
-            'limit': 250,
-            'filter[updated_at]': pendulum.parse(self.start_date_for_replication).format('X') or ''
-        }
+        params = {"limit": 250, "filter[updated_at]": pendulum.parse(self.start_date_for_replication).format("X") or ""}
 
         if next_page_token:
             params.update(**next_page_token)
@@ -135,8 +132,8 @@ class Events(AmocrmStream):
 
     def __init__(self, config: Mapping[str, Any], **kwargs):
         super().__init__(**kwargs)
-        self.start_date_for_replication = config['start_date_for_replication']
-        self.events = config.get('events')
+        self.start_date_for_replication = config["start_date_for_replication"]
+        self.events = config.get("events")
 
     def request_params(
         self,
@@ -144,10 +141,7 @@ class Events(AmocrmStream):
         stream_slice: Mapping[str, Any] = None,
         next_page_token: Mapping[str, Any] = None,
     ) -> MutableMapping[str, Any]:
-        params = {
-            'limit': 250,
-            'filter[created_at]': pendulum.parse(self.start_date_for_replication).format('X') or ''
-        }
+        params = {"limit": 250, "filter[created_at]": pendulum.parse(self.start_date_for_replication).format("X") or ""}
 
         if self.events:
             events = self.events.replace(" ", "").split(",")
@@ -172,6 +166,7 @@ class Contacts(AmocrmStream):
         self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
     ) -> str:
         return "contacts"
+
 
 # Source
 class SourceAmocrm(AbstractSource):
