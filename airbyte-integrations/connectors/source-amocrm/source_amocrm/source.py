@@ -1,6 +1,4 @@
-#
-# Copyright (c) 2023 Airbyte, Inc., all rights reserved.
-#
+"""Module providing a synchroniation amocrm resources"""
 
 
 from abc import ABC
@@ -15,8 +13,9 @@ from airbyte_cdk.sources.streams.http import HttpStream
 from airbyte_cdk.sources.streams.http.requests_native_auth.oauth import SingleUseRefreshTokenOauth2Authenticator
 
 
-# Basic full refresh stream
 class AmocrmStream(HttpStream, ABC):
+    """Basic full refresh stream"""
+
     url_base = "https://hexlet.amocrm.ru/api/v4/"
 
     def next_page_token(self, response: requests.Response) -> Optional[Mapping[str, Any]]:
@@ -52,15 +51,21 @@ class AmocrmStream(HttpStream, ABC):
 
 
 class Leads(AmocrmStream):
+    """Class represent amocrm leads"""
     primary_key = "id"
 
     def path(
-        self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
+        self,
+        stream_state: Mapping[str, Any] = None,
+        stream_slice: Mapping[str, Any] = None,
+        next_page_token: Mapping[str, Any] = None
     ) -> str:
         return "leads"
 
     def request_params(
-        self, stream_state: Mapping[str, Any], stream_slice: Mapping[str, any] = None, next_page_token: Mapping[str, Any] = None
+        self, stream_state: Mapping[str, Any],
+        stream_slice: Mapping[str, any] = None,
+          next_page_token: Mapping[str, Any] = None
     ) -> MutableMapping[str, Any]:
         params = {"limit": 250, "with": "contacts,loss_reason"}
 
@@ -71,15 +76,20 @@ class Leads(AmocrmStream):
 
 
 class Pipelines(AmocrmStream):
+    """Class represent amocrm pipileines"""
     primary_key = "id"
 
     def path(
-        self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
+        self,
+        stream_state: Mapping[str, Any] = None,
+        stream_slice: Mapping[str, Any] = None,
+        next_page_token: Mapping[str, Any] = None
     ) -> str:
         return "leads/pipelines"
 
 
 class Users(AmocrmStream):
+    """Class represent amocrm users"""
     primary_key = "id"
 
     def request_params(
@@ -96,12 +106,16 @@ class Users(AmocrmStream):
         return params
 
     def path(
-        self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
+        self,
+        stream_state: Mapping[str, Any] = None,
+        stream_slice: Mapping[str, Any] = None,
+        next_page_token: Mapping[str, Any] = None
     ) -> str:
         return "users"
 
 
 class Tasks(AmocrmStream):
+    """Class represent amocrm tasks"""
     primary_key = "id"
 
     def __init__(self, config: Mapping[str, Any], **kwargs):
@@ -114,7 +128,10 @@ class Tasks(AmocrmStream):
         stream_slice: Mapping[str, Any] = None,
         next_page_token: Mapping[str, Any] = None,
     ) -> MutableMapping[str, Any]:
-        params = {"limit": 250, "filter[updated_at]": pendulum.parse(self.start_date_for_replication).format("X") or ""}
+        params = {
+            "limit": 250,
+            "filter[updated_at]": pendulum.parse(self.start_date_for_replication).format("X") or ""
+            }
 
         if next_page_token:
             params.update(**next_page_token)
@@ -122,12 +139,16 @@ class Tasks(AmocrmStream):
         return params
 
     def path(
-        self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
+        self,
+        stream_state: Mapping[str, Any] = None,
+        stream_slice: Mapping[str, Any] = None,
+        next_page_token: Mapping[str, Any] = None
     ) -> str:
         return "tasks"
 
 
 class Events(AmocrmStream):
+    """Class represent amocrm events"""
     primary_key = "id"
 
     def __init__(self, config: Mapping[str, Any], **kwargs):
@@ -141,7 +162,10 @@ class Events(AmocrmStream):
         stream_slice: Mapping[str, Any] = None,
         next_page_token: Mapping[str, Any] = None,
     ) -> MutableMapping[str, Any]:
-        params = {"limit": 250, "filter[created_at]": pendulum.parse(self.start_date_for_replication).format("X") or ""}
+        params = {
+            "limit": 250,
+            "filter[created_at]": pendulum.parse(self.start_date_for_replication).format("X") or ""
+            }
 
         if self.events:
             events = self.events.replace(" ", "").split(",")
@@ -154,22 +178,29 @@ class Events(AmocrmStream):
         return params
 
     def path(
-        self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
+        self,
+        stream_state: Mapping[str, Any] = None,
+        stream_slice: Mapping[str, Any] = None,
+        next_page_token: Mapping[str, Any] = None
     ) -> str:
         return "events"
 
 
 class Contacts(AmocrmStream):
+    """Class represent amocrm contacts"""
     primary_key = "id"
 
     def path(
-        self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
+        self,
+        stream_state: Mapping[str, Any] = None,
+        stream_slice: Mapping[str, Any] = None,
+        next_page_token: Mapping[str, Any] = None
     ) -> str:
         return "contacts"
 
 
-# Source
 class SourceAmocrm(AbstractSource):
+    """Class for amocrm source"""
     refresh_endpoint = "https://hexlet.amocrm.ru/oauth2/access_token"
 
     def check_connection(self, logger, config) -> Tuple[bool, any]:
