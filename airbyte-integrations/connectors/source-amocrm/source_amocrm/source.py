@@ -36,6 +36,7 @@ class AmocrmStream(HttpStream, ABC):
         next_page_token: Mapping[str, Any] = None,
     ) -> MutableMapping[str, Any]:
         params = {"limit": 250}
+
         if next_page_token:
             params.update(**next_page_token)
 
@@ -67,7 +68,12 @@ class Leads(AmocrmStream):
         stream_slice: Mapping[str, any] = None,
           next_page_token: Mapping[str, Any] = None
     ) -> MutableMapping[str, Any]:
-        params = {"limit": 250, "with": "contacts,loss_reason"}
+        params = {
+            "limit": 250,
+            "with":
+            "contacts,loss_reason",
+            "order[created_at]": "asc",
+        }
 
         if next_page_token:
             params.update(**next_page_token)
