@@ -3,12 +3,14 @@
 #
 
 import asyncclick as click
+from pipelines.cli.click_decorators import click_ci_requirements_option
 from pipelines.cli.dagger_pipeline_command import DaggerPipelineCommand
 
 # MAIN GROUP
 
 
 @click.group(help="Commands related to the metadata service.")
+@click_ci_requirements_option()
 @click.pass_context
 def metadata(ctx: click.Context) -> None:
     pass
@@ -27,9 +29,12 @@ async def deploy_orchestrator(ctx: click.Context) -> None:
     from pipelines.airbyte_ci.metadata.pipeline import run_metadata_orchestrator_deploy_pipeline
 
     await run_metadata_orchestrator_deploy_pipeline(
+        ctx,
         ctx.obj["is_local"],
         ctx.obj["git_branch"],
         ctx.obj["git_revision"],
+        ctx.obj["diffed_branch"],
+        ctx.obj["git_repo_url"],
         ctx.obj["report_output_prefix"],
         ctx.obj.get("gha_workflow_run_url"),
         ctx.obj.get("dagger_logs_url"),

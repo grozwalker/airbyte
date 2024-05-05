@@ -34,16 +34,8 @@ params = [
         ["CUSTOMER_NOT_FOUND"],
         "Failed to access the customer '123'. Ensure the customer is linked to your manager account or check your permissions to access this customer account.",
     ),
-    (
-        ["CUSTOMER_NOT_ENABLED"],
-        (
-            "The customer account '123' hasn't finished signup or has been deactivated. "
-            "Sign in to the Google Ads UI to verify its status. "
-            "For reactivating deactivated accounts, refer to: "
-            "https://support.google.com/google-ads/answer/2375392."
-        ),
-    ),
     (["QUERY_ERROR"], "Incorrect custom query. Error in query: unexpected end of query."),
+    (["UNRECOGNIZED_FIELD"], "The Custom Query: `None` has unrecognized field in the query. Please make sure the field exists or name entered is valid."),
     (
         ["RESOURCE_EXHAUSTED"],
         (
