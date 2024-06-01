@@ -1,0 +1,56 @@
+{
+  "type": "object",
+  "required": ["id"],
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "created_by": {
+      "type": "integer"
+    },
+    "updated_by": {
+      "type": "integer"
+    },
+    "created_at": {
+      "type": "integer"
+    },
+    "updated_at": {
+      "type": "integer"
+    },
+    "responsible_user_id": {
+      "type": "integer"
+    },
+    "group_id": {
+      "type": "integer"
+    },
+    "entity_id": {
+      "type": "integer"
+    },
+    "entity_type": {
+      "type": "string"
+    },
+    "is_completed": {
+      "type": "boolean"
+    },
+    "task_type_id": {
+      "type": "integer"
+    },
+    "text": {
+      "type": "string"
+    },
+    "duration": {
+      "type": "integer"
+    },
+    "complete_till": {
+      "type": "integer"
+    },
+    "result": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

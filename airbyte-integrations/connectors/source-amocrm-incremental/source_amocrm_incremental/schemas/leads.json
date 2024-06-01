@@ -1,0 +1,116 @@
+{
+  "type": "object",
+  "required": ["id"],
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "name": {
+      "type": "string"
+    },
+    "price": {
+      "type": ["integer", "null"]
+    },
+    "responsible_user_id": {
+      "type": "integer"
+    },
+    "group_id": {
+      "type": "integer"
+    },
+    "status_id": {
+      "type": "integer"
+    },
+    "pipeline_id": {
+      "type": "integer"
+    },
+    "loss_reason_id": {
+      "type": ["integer", "null"]
+    },
+    "score": {
+      "type": ["integer", "null"]
+    },
+    "created_at": {
+      "type": "integer"
+    },
+    "labor_cost": {
+      "type": ["integer", "null"]
+    },
+    "source_id": {
+      "type": ["integer", "null"]
+    },
+    "updated_at": {
+      "type": "integer"
+    },
+    "closed_at": {
+      "type": ["integer", "null"]
+    },
+    "is_deleted": {
+      "type": "boolean"
+    },
+    "custom_fields_values": {
+      "type": ["array", "null"],
+      "items": {
+        "type": ["object", "null"],
+        "properties": {
+          "field_id": {
+            "type": "integer"
+          },
+          "field_name": {
+            "type": "string"
+          },
+          "field_code": {
+            "type": ["string", "null"]
+          },
+          "field_type": {
+            "type": "string"
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "type": ["object", "null"]
+            }
+          }
+        }
+      }
+    },
+    "_embedded": {
+      "type": "object",
+      "properties": {
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": ["object", "null"]
+          }
+        },
+        "contacts": {
+          "type": "array",
+          "items": {
+            "type": ["object", "null"],
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "is_main": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "loss_reason": {
+          "type": "array",
+          "items": {
+            "type": ["object", "null"],
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

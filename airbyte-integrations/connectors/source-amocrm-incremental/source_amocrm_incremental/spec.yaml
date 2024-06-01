@@ -1,0 +1,70 @@
+documentationUrl: https://docsurl.com
+connectionSpecification:
+  $schema: http://json-schema.org/draft-07/schema#
+  title: Amocrm Spec
+  type: object
+  properties:
+    credentials:
+      type: object
+      title: Authenticate via Amo (OAuth)
+      required:
+        - auth_type
+        - client_id
+        - client_secret
+        - refresh_token
+        - access_token
+        - token_expiry_date
+      properties:
+        auth_type:
+          type: string
+          title: Oauth type
+          const: "oauth2.0"
+        client_id:
+          type: string
+          title: Client ID
+          description: "Enter your Amp application's Client ID"
+          order: 0
+        client_secret:
+          type: string
+          title: Client Secret
+          description: "Enter your Amo application's Client Secret"
+          airbyte_secret: true
+          order: 1
+        refresh_token:
+          type: string
+          title: Refresh Token
+          description: "Enter your Amo application's refresh token"
+          airbyte_secret: true
+          order: 2
+        access_token:
+          type: string
+          title: Access Token
+          description: "Enter your Amo application's access token"
+          airbyte_secret: true
+          order: 3
+        token_expiry_date:
+          title: Token expire date
+          type: string
+          description: "The date-time when the access token should be refreshed"
+          order: 4
+    start_date_for_replication:
+      title: Start Date For Events
+      type: string
+      description: "UTC date in the format YYYY-MM-DD. Any data before this date will not be replicated."
+      pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+      pattern_descriptor: "YYYY-MM-DD"
+      format: date
+      order: 1
+    end_date_for_replication:
+      title: End Date For Events
+      type: string
+      description: "UTC date in the format YYYY-MM-DD. Any data after this date will not be replicated."
+      pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+      pattern_descriptor: "YYYY-MM-DD"
+      format: date
+      order: 2
+    events:
+      title: Only this events replicates
+      type: string
+      description: "UTC date in the format YYYY-MM-DD. Any data after this date will not be replicated."
+      order: 3
