@@ -15,7 +15,7 @@ repository = "https://github.com/airbytehq/airbyte"
 packages = [ { include = "source_amocrm_incremental" }, {include = "main.py" } ]
 
 [tool.poetry.dependencies]
-python = "^3.10,<3.12"
+python = ">3.9,<3.12"
 airbyte-cdk = "^0"
 
 [tool.poetry.scripts]
@@ -25,3 +25,4 @@ source-amocrm-incremental = "source_amocrm_incremental.run:run"
 requests-mock = "*"
 pytest-mock = "*"
 pytest = "*"
+flake8 = "^7.0.0"
