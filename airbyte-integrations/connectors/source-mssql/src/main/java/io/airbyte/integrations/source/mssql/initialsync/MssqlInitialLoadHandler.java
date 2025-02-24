@@ -9,6 +9,7 @@ import static io.airbyte.cdk.db.jdbc.JdbcConstants.JDBC_COLUMN_DATABASE_NAME;
 import static io.airbyte.cdk.db.jdbc.JdbcConstants.JDBC_COLUMN_SCHEMA_NAME;
 import static io.airbyte.cdk.db.jdbc.JdbcConstants.JDBC_COLUMN_TABLE_NAME;
 import static io.airbyte.cdk.db.jdbc.JdbcConstants.JDBC_COLUMN_TYPE;
+import static io.airbyte.cdk.db.jdbc.JdbcUtils.getFullyQualifiedTableName;
 import static io.airbyte.cdk.integrations.debezium.DebeziumIteratorConstants.SYNC_CHECKPOINT_DURATION_PROPERTY;
 import static io.airbyte.cdk.integrations.debezium.DebeziumIteratorConstants.SYNC_CHECKPOINT_RECORDS_PROPERTY;
 
@@ -81,9 +82,9 @@ public class MssqlInitialLoadHandler implements InitialLoadHandler<JDBCType> {
     return (database.getSourceConfig().has(JdbcUtils.DATABASE_KEY) ? database.getSourceConfig().get(JdbcUtils.DATABASE_KEY).asText() : null);
   }
 
-  public static String discoverClusteredIndexForStream(final JdbcDatabase database,
-                                                       final AirbyteStream stream) {
-    Map<String, String> clusteredIndexes = new HashMap<>();
+  public static Map<String, List<String>> discoverClusteredIndexForStream(final JdbcDatabase database,
+                                                                          final AirbyteStream stream) {
+    Map<String, List<String>> clusteredIndexes = new HashMap<>();
     try {
       // Get all clustered index names without specifying a table name
       clusteredIndexes = aggregateClusteredIndexes(database.bufferedResultSetQuery(
@@ -92,7 +93,7 @@ public class MssqlInitialLoadHandler implements InitialLoadHandler<JDBCType> {
             if (r.getShort(JDBC_COLUMN_TYPE) == DatabaseMetaData.tableIndexClustered) {
               final String schemaName =
                   r.getObject(JDBC_COLUMN_SCHEMA_NAME) != null ? r.getString(JDBC_COLUMN_SCHEMA_NAME) : r.getString(JDBC_COLUMN_DATABASE_NAME);
-              final String streamName = JdbcUtils.getFullyQualifiedTableName(schemaName, r.getString(JDBC_COLUMN_TABLE_NAME));
+              final String streamName = getFullyQualifiedTableName(schemaName, r.getString(JDBC_COLUMN_TABLE_NAME));
               final String columnName = r.getString(JDBC_COLUMN_COLUMN_NAME);
               return new ClusteredIndexAttributesFromDb(streamName, columnName);
             } else {
@@ -102,7 +103,10 @@ public class MssqlInitialLoadHandler implements InitialLoadHandler<JDBCType> {
     } catch (final SQLException e) {
       LOGGER.debug(String.format("Could not retrieve clustered indexes without a table name (%s), not blocking, fall back to use pk.", e));
     }
-    return clusteredIndexes.getOrDefault(stream.getName(), null);
+
+    LOGGER.debug("Clustered Indexes: {}", clusteredIndexes);
+
+    return clusteredIndexes.isEmpty() ? null : clusteredIndexes;
   }
 
   @VisibleForTesting
@@ -116,16 +120,18 @@ public class MssqlInitialLoadHandler implements InitialLoadHandler<JDBCType> {
    *         multiple columns, we always use the first column.
    */
   @VisibleForTesting
-  static Map<String, String> aggregateClusteredIndexes(final List<ClusteredIndexAttributesFromDb> entries) {
-    final Map<String, String> result = new HashMap<>();
+  static Map<String, List<String>> aggregateClusteredIndexes(final List<ClusteredIndexAttributesFromDb> entries) {
+    final Map<String, List<String>> result = new HashMap<>();
+
     entries.forEach(entry -> {
       if (entry == null) {
         return;
       }
-      if (result.containsKey(entry.streamName())) {
-        return;
+      if (!result.containsKey(entry.streamName())) {
+        result.put(entry.streamName(), new ArrayList<>());
       }
-      result.put(entry.streamName, entry.columnName());
+      // Store the column name in a list to support composite clustered indexes.
+      result.get(entry.streamName()).add(entry.columnName());
     });
     return result;
   }
@@ -135,7 +141,8 @@ public class MssqlInitialLoadHandler implements InitialLoadHandler<JDBCType> {
                                                                              final Map<String, TableInfo<CommonField<JDBCType>>> tableNameToTable,
                                                                              final Instant emittedAt,
                                                                              final boolean decorateWithStartedStatus,
-                                                                             final boolean decorateWithCompletedStatus) {
+                                                                             final boolean decorateWithCompletedStatus,
+                                                                             @NotNull final Optional<Duration> cdcInitialLoadTimeout) {
     final List<AutoCloseableIterator<AirbyteMessage>> iteratorList = new ArrayList<>();
     for (final ConfiguredAirbyteStream airbyteStream : catalog.getStreams()) {
       final AirbyteStream stream = airbyteStream.getStream();
@@ -152,7 +159,7 @@ public class MssqlInitialLoadHandler implements InitialLoadHandler<JDBCType> {
           iteratorList.add(
               new StreamStatusTraceEmitterIterator(new AirbyteStreamStatusHolder(pair, AirbyteStreamStatusTraceMessage.AirbyteStreamStatus.STARTED)));
         }
-        iteratorList.add(getIteratorForStream(airbyteStream, table, emittedAt));
+        iteratorList.add(getIteratorForStream(airbyteStream, table, emittedAt, cdcInitialLoadTimeout));
         if (decorateWithCompletedStatus) {
           iteratorList.add(new StreamStatusTraceEmitterIterator(
               new AirbyteStreamStatusHolder(pair, AirbyteStreamStatusTraceMessage.AirbyteStreamStatus.COMPLETE)));
@@ -166,7 +173,8 @@ public class MssqlInitialLoadHandler implements InitialLoadHandler<JDBCType> {
   @Override
   public AutoCloseableIterator<AirbyteMessage> getIteratorForStream(@NotNull final ConfiguredAirbyteStream airbyteStream,
                                                                     @NotNull final TableInfo<CommonField<JDBCType>> table,
-                                                                    @NotNull final Instant emittedAt) {
+                                                                    @NotNull final Instant emittedAt,
+                                                                    @NotNull final Optional<Duration> cdcInitialLoadTimeout) {
     final AirbyteStream stream = airbyteStream.getStream();
     final String streamName = stream.getName();
     final String namespace = stream.getNamespace();
@@ -178,7 +186,7 @@ public class MssqlInitialLoadHandler implements InitialLoadHandler<JDBCType> {
         .toList();
     final AutoCloseableIterator<AirbyteRecordData> queryStream =
         new MssqlInitialLoadRecordIterator(database, sourceOperations, quoteString, initialLoadStateManager, selectedDatabaseFields, pair,
-            calculateChunkSize(tableSizeInfoMap.get(pair), pair), isCompositePrimaryKey(airbyteStream));
+            calculateChunkSize(tableSizeInfoMap.get(pair), pair), isCompositePrimaryKey(airbyteStream), emittedAt, cdcInitialLoadTimeout);
     final AutoCloseableIterator<AirbyteMessage> recordIterator =
         getRecordIterator(queryStream, streamName, namespace, emittedAt.toEpochMilli());
     final AutoCloseableIterator<AirbyteMessage> recordAndMessageIterator = augmentWithState(recordIterator, airbyteStream);

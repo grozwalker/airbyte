@@ -162,7 +162,11 @@ function copyToClipBoard(htmlElement) {
     {% if step_result.status == StepStatus.SUCCESS %}
       <label for="{{ step_result.step.title }}" class="lbl-toggle success">{{ step_result.step.title }} | {{ format_duration(step_result.step.run_duration) }}</label>
     {% elif step_result.status == StepStatus.FAILURE %}
+      {% if not step_result.consider_in_overall_status %}
+      <label for="{{ step_result.step.title }}" class="lbl-toggle failure">{{ step_result.step.title }} | Ignored (Failed) | {{ format_duration(step_result.step.run_duration) }}</label>
+      {% else %}
       <label for="{{ step_result.step.title }}" class="lbl-toggle failure">{{ step_result.step.title }} | {{ format_duration(step_result.step.run_duration) }}</label>
+      {% endif %}
     {% else %}
       <label for="{{ step_result.step.title }}" class="lbl-toggle">{{ step_result.step.title }} | {{ format_duration(step_result.step.run_duration) }}</label>
     {% endif %}
@@ -192,6 +196,6 @@ function copyToClipBoard(htmlElement) {
     </div>
   </div>
   {% endfor %}
-  <p style="margin-top: 50px"><em>These reports are generated from <a href="https://github.com/airbytehq/airbyte/blob/master/airbyte-ci/connectors/pipelines/pipelines/tests/templates/test_report.html.j2">this code</a>, please reach out to the Connector Operations team for support.</em></p>
+  <p style="margin-top: 50px"><em>These reports are generated from <a href="https://github.com/airbytehq/airbyte/blob/master/airbyte-ci/connectors/pipelines/pipelines/airbyte_ci/connectors/test/steps/templates/test_report.html.j2">this code</a>, please reach out to the Connector Operations team for support.</em></p>
 </body>
 </html>

@@ -11,6 +11,7 @@ from pytest import fixture
 from responses import matchers
 from source_jira.source import SourceJira
 
+
 ENV_REQUEST_CACHE_PATH = "REQUEST_CACHE_PATH"
 os.environ["REQUEST_CACHE_PATH"] = ENV_REQUEST_CACHE_PATH
 
@@ -38,6 +39,7 @@ def config():
         "email": "email@email.com",
         "start_date": "2021-01-01T00:00:00Z",
         "projects": ["Project1"],
+        "enable_experimental_streams": True,
     }
 
 
@@ -295,6 +297,15 @@ def mock_projects_responses(config, projects_response):
 
 
 @fixture
+def mock_non_deleted_projects_responses(config, projects_response):
+    responses.add(
+        responses.GET,
+        f"https://{config['domain']}/rest/api/3/project/search?maxResults=50&expand=description%2Clead&status=live&status=archived",
+        json=projects_response,
+    )
+
+
+@fixture
 def mock_projects_responses_additional_project(config, projects_response):
     projects_response["values"] += [{"id": "3", "key": "Project3"}, {"id": "4", "key": "Project4"}]
     responses.add(
@@ -314,7 +325,7 @@ def mock_issues_responses_with_date_filter(config, issues_response):
                 {
                     "maxResults": 50,
                     "fields": "*all",
-                    "jql": "updated >= '2021/01/01 00:00' and project in (1) ORDER BY updated asc",
+                    "jql": "updated >= 1609459200000 and project in (1) ORDER BY updated asc",
                     "expand": "renderedFields,transitions,changelog",
                 }
             )
@@ -329,7 +340,7 @@ def mock_issues_responses_with_date_filter(config, issues_response):
                 {
                     "maxResults": 50,
                     "fields": "*all",
-                    "jql": "updated >= '2021/01/01 00:00' and project in (2) ORDER BY updated asc",
+                    "jql": "updated >= 1609459200000 and project in (2) ORDER BY updated asc",
                     "expand": "renderedFields,transitions,changelog",
                 }
             )
@@ -344,7 +355,7 @@ def mock_issues_responses_with_date_filter(config, issues_response):
                 {
                     "maxResults": 50,
                     "fields": "*all",
-                    "jql": "updated >= '2021/01/01 00:00' and project in (3) ORDER BY updated asc",
+                    "jql": "updated >= 1609459200000 and project in (3) ORDER BY updated asc",
                     "expand": "renderedFields,transitions,changelog",
                 }
             )
@@ -360,7 +371,7 @@ def mock_issues_responses_with_date_filter(config, issues_response):
                 {
                     "maxResults": 50,
                     "fields": "*all",
-                    "jql": "updated >= '2021/01/01 00:00' and project in (4) ORDER BY updated asc",
+                    "jql": "updated >= 1609459200000 and project in (4) ORDER BY updated asc",
                     "expand": "renderedFields,transitions,changelog",
                 }
             )
@@ -538,7 +549,7 @@ def mock_sprints_response(config, sprints_response):
 
 
 def find_stream(stream_name, config):
-    for stream in SourceJira().streams(config=config):
+    for stream in SourceJira(config=config, catalog=None, state=None).streams(config=config):
         if stream.name == stream_name:
             return stream
     raise ValueError(f"Stream {stream_name} not found")

@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 public class MssqlInitialLoadStreamStateManager extends MssqlInitialLoadStateManager {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MssqlInitialLoadStateManager.class);
-  private final Map<AirbyteStreamNameNamespacePair, OrderedColumnInfo> pairToOrderedColInfo;
 
   public MssqlInitialLoadStreamStateManager(final ConfiguredAirbyteCatalog catalog,
                                             final InitialLoadStreams initialLoadStreams,
@@ -52,11 +51,6 @@ public class MssqlInitialLoadStreamStateManager extends MssqlInitialLoadStateMan
   }
 
   @Override
-  public OrderedColumnInfo getOrderedColumnInfo(final AirbyteStreamNameNamespacePair pair) {
-    return pairToOrderedColInfo.get(pair);
-  }
-
-  @Override
   public AirbyteStateMessage generateStateMessageAtCheckpoint(final ConfiguredAirbyteStream stream) {
     AirbyteStreamNameNamespacePair pair =
         new io.airbyte.protocol.models.v0.AirbyteStreamNameNamespacePair(stream.getStream().getName(), stream.getStream().getNamespace());
@@ -70,7 +64,7 @@ public class MssqlInitialLoadStreamStateManager extends MssqlInitialLoadStateMan
     Preconditions.checkNotNull(pair);
     Preconditions.checkNotNull(pair.getName());
     Preconditions.checkNotNull(pair.getNamespace());
-    LOGGER.info("State data for {}: {}", pair.getNamespace().concat("_").concat(pair.getName()), stateData);
+    LOGGER.debug("State data for {}: {}", pair.getNamespace().concat("_").concat(pair.getName()), stateData);
 
     return new AirbyteStreamState()
         .withStreamDescriptor(

@@ -34,6 +34,22 @@ The Sentry source connector supports the following [sync modes](https://docs.air
 - [Projects](https://docs.sentry.io/api/projects/list-your-projects/)
 - [Releases](https://docs.sentry.io/api/releases/list-an-organizations-releases/)
 
+## Limitations & Troubleshooting
+
+<details>
+<summary>
+Expand to see details about Sentry connector limitations and troubleshooting.
+</summary>
+
+### Connector limitations
+
+:::warning
+**Sentry API Restriction on Events Data**: Access to the events endpoint is guaranteed only for the last 90 days by Sentry. If you use the Full Refresh Overwrite sync, be aware that any events data older than 90 days will be **deleted** from your target destination and replaced with the data from the last 90 days only. Use an Append sync mode to ensure historical data is retained.
+Please be aware: this also means that any change older than 90 days will not be replicated using the incremental sync mode. If you want all your synced data to remain up to date, please set up your sync frequency to no more than 90 days.
+:::
+
+</details>
+
 ## Data type map
 
 | Integration Type    | Airbyte Type |
@@ -44,9 +60,24 @@ The Sentry source connector supports the following [sync modes](https://docs.air
 | `object`            | `object`     |
 
 ## Changelog
+<details>
+  <summary>Expand to review</summary>
 
-| Version | Date       | Pull Request                                             | Subject                                                                 |
-| :------ | :--------- | :------------------------------------------------------- | :---------------------------------------------------------------------- |
+| Version | Date       | Pull Request                                             | Subject                                                                    |
+|:--------|:-----------|:---------------------------------------------------------|:---------------------------------------------------------------------------|
+| 0.6.11 | 2025-02-22 | [54521](https://github.com/airbytehq/airbyte/pull/54521) | Update dependencies |
+| 0.6.10 | 2025-02-15 | [54100](https://github.com/airbytehq/airbyte/pull/54100) | Update dependencies |
+| 0.6.9 | 2025-02-08 | [53513](https://github.com/airbytehq/airbyte/pull/53513) | Update dependencies |
+| 0.6.8 | 2025-02-01 | [52979](https://github.com/airbytehq/airbyte/pull/52979) | Update dependencies |
+| 0.6.7 | 2025-01-25 | [52503](https://github.com/airbytehq/airbyte/pull/52503) | Update dependencies |
+| 0.6.6 | 2025-01-18 | [51896](https://github.com/airbytehq/airbyte/pull/51896) | Update dependencies |
+| 0.6.5 | 2025-01-11 | [51335](https://github.com/airbytehq/airbyte/pull/51335) | Update dependencies |
+| 0.6.4 | 2025-01-04 | [50930](https://github.com/airbytehq/airbyte/pull/50930) | Update dependencies |
+| 0.6.3 | 2024-12-28 | [50709](https://github.com/airbytehq/airbyte/pull/50709) | Update dependencies |
+| 0.6.2 | 2024-12-21 | [49058](https://github.com/airbytehq/airbyte/pull/49058) | Starting with this version, the Docker image is now rootless. Please note that this and future versions will not be compatible with Airbyte versions earlier than 0.64 |
+| 0.6.1 | 2024-11-04 | [43855](https://github.com/airbytehq/airbyte/pull/43855) | Update dependencies |
+| 0.6.0 | 2024-10-30 | [47988](https://github.com/airbytehq/airbyte/pull/47988) | Upgrade the CDK and startup files to sync incremental streams concurrently |
+| 0.5.3 | 2024-06-06 | [39180](https://github.com/airbytehq/airbyte/pull/39180) | [autopull] Upgrade base image to v1.2.2 |
 | 0.5.2 | 2024-05-20 | [38263](https://github.com/airbytehq/airbyte/pull/38263) | Replace AirbyteLogger with logging.Logger |
 | 0.5.1 | 2024-04-01 | [36731](https://github.com/airbytehq/airbyte/pull/36731) | Add `%Y-%m-%dT%H:%M:%S%z` to date time formats. |
 | 0.5.0 | 2024-03-27 | [35755](https://github.com/airbytehq/airbyte/pull/35755) | Migrate to low-code. |
@@ -72,3 +103,5 @@ The Sentry source connector supports the following [sync modes](https://docs.air
 | 0.1.2 | 2021-12-28 | [15345](https://github.com/airbytehq/airbyte/pull/15345) | Migrate to config-based framework |
 | 0.1.1 | 2021-12-28 | [8628](https://github.com/airbytehq/airbyte/pull/8628) | Update fields in source-connectors specifications |
 | 0.1.0 | 2021-10-12 | [6975](https://github.com/airbytehq/airbyte/pull/6975) | New Source: Sentry |
+
+</details>

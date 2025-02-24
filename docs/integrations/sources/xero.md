@@ -31,8 +31,15 @@ This page contains the setup guide and reference information for the Xero source
 
 **For Airbyte Open Source:**
 
-Please follow [instruction](https://developer.xero.com/documentation/guides/oauth2/auth-flow/) to obtain all requirements:
-- Access Token
+There is two currently supported ways to authenticate with Xero:
+
+For the bearer token strategy, please follow [instruction](https://developer.xero.com/documentation/guides/oauth2/pkce-flow/) to obtain all requirements:
+- Client ID
+
+For the OAuth client credentials, please follow [instructions](https://developer.xero.com/documentation/guides/oauth2/custom-connections) to obtain all requirements:
+- Client ID
+- Client Secret
+
 <!-- /env:oss -->
 
 ## Setup guide
@@ -59,6 +66,11 @@ Please follow [instruction](https://developer.xero.com/documentation/guides/oaut
 **For Airbyte Open Source:**
 
 1. Create an application in [Xero development center](https://developer.xero.com/app/manage/).
+
+For the client credentials, make sure you set the list of scopes mentioned above.
+
+You can optionally use postman to generate the required `access_token` needed for the source setup.
+
 <!-- /env:oss -->
 
 ## Supported sync modes
@@ -103,9 +115,19 @@ The connector is restricted by Xero [API rate limits](https://developer.xero.com
 
 ## Changelog
 
-| Version | Date       | Pull Request                                             | Subject                           |
-|:--------|:-----------|:---------------------------------------------------------|:----------------------------------|
-| 1.0.0   | 2024-04-30 | [36878](https://github.com/airbytehq/airbyte/pull/36878) | Migrate to low code               |
+<details>
+  <summary>Expand to review</summary>
+
+| Version | Date       | Pull Request                                             | Subject                                                   |
+|:--------|:-----------|:---------------------------------------------------------|:----------------------------------------------------------|
+| 2.1.3 | 2025-02-22 | [54526](https://github.com/airbytehq/airbyte/pull/54526) | Update dependencies |
+| 2.1.2 | 2025-02-15 | [54042](https://github.com/airbytehq/airbyte/pull/54042) | Update dependencies |
+| 2.1.1 | 2025-02-08 | [43841](https://github.com/airbytehq/airbyte/pull/43841) | Update dependencies |
+| 2.1.0 | 2024-10-23 | [47264](https://github.com/airbytehq/airbyte/pull/47264) | Migrate to Manifest-only |
+| 2.0.1 | 2025-01-10 | [51034](https://github.com/airbytehq/airbyte/pull/51034) | Fix for time part being removed from all datetimes fields |
+| 2.0.0 | 2024-06-06 | [39316](https://github.com/airbytehq/airbyte/pull/39316) | Add OAuth and Bearer strategies |
+| 1.0.1 | 2024-06-06 | [39264](https://github.com/airbytehq/airbyte/pull/39264) | [autopull] Upgrade base image to v1.2.2 |
+| 1.0.0 | 2024-04-30 | [36878](https://github.com/airbytehq/airbyte/pull/36878) | Migrate to low code |
 | 0.2.6 | 2024-05-17 | [38330](https://github.com/airbytehq/airbyte/pull/38330) | Updating python dependencies |
 | 0.2.5 | 2024-01-11 | [34154](https://github.com/airbytehq/airbyte/pull/34154) | prepare for airbyte-lib |
 | 0.2.4 | 2023-11-24 | [32837](https://github.com/airbytehq/airbyte/pull/32837) | Handle 403 error |
@@ -114,3 +136,5 @@ The connector is restricted by Xero [API rate limits](https://developer.xero.com
 | 0.2.1 | 2023-03-20 | [24217](https://github.com/airbytehq/airbyte/pull/24217) | Certify to Beta |
 | 0.2.0 | 2023-03-14 | [24005](https://github.com/airbytehq/airbyte/pull/24005) | Enable in Cloud |
 | 0.1.0 | 2021-11-11 | [18666](https://github.com/airbytehq/airbyte/pull/18666) | 🎉 New Source - Xero [python cdk] |
+
+</details>

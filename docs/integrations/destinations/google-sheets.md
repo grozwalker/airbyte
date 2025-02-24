@@ -150,8 +150,45 @@ EXAMPLE:
 
 ## Changelog
 
+<details>
+  <summary>Expand to review</summary>
+
 | Version | Date       | Pull Request                                             | Subject                                                    |
-| ------- | ---------- | -------------------------------------------------------- | ---------------------------------------------------------- |
+|---------| ---------- | -------------------------------------------------------- | ---------------------------------------------------------- |
+| 0.2.39 | 2025-02-22 | [54248](https://github.com/airbytehq/airbyte/pull/54248) | Update dependencies |
+| 0.2.38 | 2025-02-15 | [53892](https://github.com/airbytehq/airbyte/pull/53892) | Update dependencies |
+| 0.2.37 | 2025-02-01 | [52194](https://github.com/airbytehq/airbyte/pull/52194) | Update dependencies |
+| 0.2.36 | 2025-01-18 | [51748](https://github.com/airbytehq/airbyte/pull/51748) | Update dependencies |
+| 0.2.35 | 2025-01-11 | [51262](https://github.com/airbytehq/airbyte/pull/51262) | Update dependencies |
+| 0.2.34 | 2025-01-04 | [50912](https://github.com/airbytehq/airbyte/pull/50912) | Update dependencies |
+| 0.2.33 | 2024-12-28 | [50492](https://github.com/airbytehq/airbyte/pull/50492) | Update dependencies |
+| 0.2.32 | 2024-12-21 | [50168](https://github.com/airbytehq/airbyte/pull/50168) | Update dependencies |
+| 0.2.31 | 2024-12-14 | [48915](https://github.com/airbytehq/airbyte/pull/48915) | Update dependencies |
+| 0.2.30 | 2024-11-25 | [48678](https://github.com/airbytehq/airbyte/pull/48678) | Update dependencies |
+| 0.2.29 | 2024-11-04 | [48281](https://github.com/airbytehq/airbyte/pull/48281) | Update dependencies |
+| 0.2.28 | 2024-10-28 | [47042](https://github.com/airbytehq/airbyte/pull/47042) | Update dependencies |
+| 0.2.27 | 2024-10-12 | [46772](https://github.com/airbytehq/airbyte/pull/46772) | Update dependencies |
+| 0.2.26 | 2024-10-05 | [46464](https://github.com/airbytehq/airbyte/pull/46464) | Update dependencies |
+| 0.2.25 | 2024-09-28 | [46204](https://github.com/airbytehq/airbyte/pull/46204) | Update dependencies |
+| 0.2.24 | 2024-09-21 | [45772](https://github.com/airbytehq/airbyte/pull/45772) | Update dependencies |
+| 0.2.23 | 2024-09-14 | [45577](https://github.com/airbytehq/airbyte/pull/45577) | Update dependencies |
+| 0.2.22 | 2024-09-07 | [45325](https://github.com/airbytehq/airbyte/pull/45325) | Update dependencies |
+| 0.2.21 | 2024-08-31 | [44989](https://github.com/airbytehq/airbyte/pull/44989) | Update dependencies |
+| 0.2.20 | 2024-08-24 | [44736](https://github.com/airbytehq/airbyte/pull/44736) | Update dependencies |
+| 0.2.19 | 2024-08-22 | [44530](https://github.com/airbytehq/airbyte/pull/44530) | Update test dependencies |
+| 0.2.18 | 2024-08-17 | [44259](https://github.com/airbytehq/airbyte/pull/44259) | Update dependencies |
+| 0.2.17 | 2024-08-10 | [43603](https://github.com/airbytehq/airbyte/pull/43603) | Update dependencies |
+| 0.2.16 | 2024-08-03 | [43066](https://github.com/airbytehq/airbyte/pull/43066) | Update dependencies |
+| 0.2.15 | 2024-07-27 | [42819](https://github.com/airbytehq/airbyte/pull/42819) | Update dependencies |
+| 0.2.14 | 2024-07-20 | [42368](https://github.com/airbytehq/airbyte/pull/42368) | Update dependencies |
+| 0.2.13 | 2024-07-13 | [41721](https://github.com/airbytehq/airbyte/pull/41721) | Update dependencies |
+| 0.2.12 | 2024-07-10 | [41520](https://github.com/airbytehq/airbyte/pull/41520) | Update dependencies |
+| 0.2.11 | 2024-07-09 | [41076](https://github.com/airbytehq/airbyte/pull/41076) | Update dependencies |
+| 0.2.10 | 2024-07-06 | [40999](https://github.com/airbytehq/airbyte/pull/40999) | Update dependencies |
+| 0.2.9 | 2024-06-26 | [40529](https://github.com/airbytehq/airbyte/pull/40529) | Update dependencies |
+| 0.2.8 | 2024-06-25 | [40353](https://github.com/airbytehq/airbyte/pull/40353) | Update dependencies |
+| 0.2.7 | 2024-06-22 | [40172](https://github.com/airbytehq/airbyte/pull/40172) | Update dependencies |
+| 0.2.6 | 2024-06-04 | [39011](https://github.com/airbytehq/airbyte/pull/39011) | [autopull] Upgrade base image to v1.2.1 |
 | 0.2.5 | 2024-05-22 | [38516](https://github.com/airbytehq/airbyte/pull/38516) | [autopull] base image + poetry + up_to_date |
 | 0.2.4 | 2024-05-21 | [38516](https://github.com/airbytehq/airbyte/pull/38516) | [autopull] base image + poetry + up_to_date |
 | 0.2.3 | 2023-09-25 | [30748](https://github.com/airbytehq/airbyte/pull/30748) | Performance testing - include socat binary in docker image |
@@ -161,3 +198,5 @@ EXAMPLE:
 | 0.1.2 | 2022-10-31 | [18729](https://github.com/airbytehq/airbyte/pull/18729) | Fix empty headers list |
 | 0.1.1 | 2022-06-15 | [14751](https://github.com/airbytehq/airbyte/pull/14751) | Yield state only when records saved |
 | 0.1.0 | 2022-04-26 | [12135](https://github.com/airbytehq/airbyte/pull/12135) | Initial Release |
+
+</details>

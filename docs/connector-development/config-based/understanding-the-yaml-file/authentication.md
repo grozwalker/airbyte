@@ -49,6 +49,8 @@ authenticator:
   api_token: "Bearer hello"
 ```
 
+For more information see [ApiKeyAuthenticator Reference](https://docs.airbyte.com/connector-development/config-based/understanding-the-yaml-file/reference#/definitions/ApiKeyAuthenticator)
+
 ### BearerAuthenticator
 
 The `BearerAuthenticator` is a specialized `ApiKeyAuthenticator` that always sets the header "Authorization" with the value `Bearer {token}`.
@@ -78,6 +80,8 @@ authenticator:
 ```
 
 More information on bearer authentication can be found [here](https://swagger.io/docs/specification/authentication/bearer-authentication/).
+
+For more information see [BearerAuthenticator Reference](https://docs.airbyte.com/connector-development/config-based/understanding-the-yaml-file/reference#/definitions/BearerAuthenticator)
 
 ### BasicHttpAuthenticator
 
@@ -120,75 +124,13 @@ authenticator:
   username: "hello"
 ```
 
+For more information see [BasicHttpAuthenticator Reference](https://docs.airbyte.com/connector-development/config-based/understanding-the-yaml-file/reference#/definitions/BasicHttpAuthenticator)
+
 ### OAuth
 
-OAuth authentication is supported through the `OAuthAuthenticator`, which requires the following parameters:
+The OAuth authenticator is a declarative way to authenticate with an API using OAuth 2.0.
 
-- token_refresh_endpoint: The endpoint to refresh the access token
-- client_id: The client id
-- client_secret: The client secret
-- refresh_token: The token used to refresh the access token
-- scopes (Optional): The scopes to request. Default: Empty list
-- token_expiry_date (Optional): The access token expiration date formatted as RFC-3339 ("%Y-%m-%dT%H:%M:%S.%f%z")
-- access_token_name (Optional): The field to extract access token from in the response. Default: "access_token".
-- expires_in_name (Optional): The field to extract expires_in from in the response. Default: "expires_in"
-- refresh_request_body (Optional): The request body to send in the refresh request. Default: None
-- grant_type (Optional): The parameter specified grant_type to request access_token. Default: "refresh_token"
-
-Schema:
-
-```yaml
-OAuth:
-  type: object
-  additionalProperties: true
-  required:
-    - token_refresh_endpoint
-    - client_id
-    - client_secret
-    - refresh_token
-    - access_token_name
-    - expires_in_name
-  properties:
-    "$parameters":
-      "$ref": "#/definitions/$parameters"
-    token_refresh_endpoint:
-      type: string
-    client_id:
-      type: string
-    client_secret:
-      type: string
-    refresh_token:
-      type: string
-    scopes:
-      type: array
-      items:
-        type: string
-      default: []
-    token_expiry_date:
-      type: string
-    access_token_name:
-      type: string
-      default: "access_token"
-    expires_in_name:
-      type: string
-      default: "expires_in"
-    refresh_request_body:
-      type: object
-    grant_type:
-      type: string
-      default: "refresh_token"
-```
-
-Example:
-
-```yaml
-authenticator:
-  type: "OAuthAuthenticator"
-  token_refresh_endpoint: "https://api.searchmetrics.com/v4/token"
-  client_id: "{{ config['api_key'] }}"
-  client_secret: "{{ config['client_secret'] }}"
-  refresh_token: ""
-```
+To learn more about the OAuth authenticator, see the [OAuth 2.0](../advanced-topics/oauth.md) documentation.
 
 ### JWT Authenticator
 
@@ -342,6 +284,8 @@ authenticator:
   additional_jwt_payload:
     test: "test custom payload"
 ```
+
+For more information see [JwtAuthenticator Reference](https://docs.airbyte.com/connector-development/config-based/understanding-the-yaml-file/reference#/definitions/JwtAuthenticator)
 
 ## More readings
 
