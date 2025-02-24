@@ -128,6 +128,126 @@ class Leads(IncrementalAmocrmIncrementalStream):
         return params
 
 
+class Events(IncrementalAmocrmIncrementalStream):
+    cursor_field = "created_at"
+
+    primary_key = "id"
+
+    def __init__(self, config: Mapping[str, Any], **kwargs):
+        self.start_date_for_replication = config["start_date_for_replication"]
+        super().__init__(**kwargs)
+
+    def path(self, **kwargs) -> str:
+        return "events"
+
+    def stream_slices(self, stream_state: Mapping[str, Any] = None, **kwargs) -> Iterable[Optional[Mapping[str, any]]]:
+        start_date_for_replication_ts = pendulum.parse(self.start_date_for_replication).format("X")
+        start_ts = stream_state.get(self.cursor_field, start_date_for_replication_ts) if stream_state else start_date_for_replication_ts
+
+        yield {"start_date": start_ts}
+
+    def request_params(
+        self, stream_state: Mapping[str, Any], stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
+    ) -> MutableMapping[str, Any]:
+        params = {
+            "limit": 100,
+            "filter[created_at]": stream_slice["start_date"],
+        }
+
+        if next_page_token:
+            params.update(**next_page_token)
+
+        return params
+
+class Contacts(IncrementalAmocrmIncrementalStream):
+    cursor_field = "updated_at"
+
+    primary_key = "id"
+
+    def __init__(self, config: Mapping[str, Any], **kwargs):
+        self.start_date_for_replication = config["start_date_for_replication"]
+        super().__init__(**kwargs)
+
+    def path(self, **kwargs) -> str:
+        return "contacts"
+
+    def stream_slices(self, stream_state: Mapping[str, Any] = None, **kwargs) -> Iterable[Optional[Mapping[str, any]]]:
+        start_date_for_replication_ts = pendulum.parse(self.start_date_for_replication).format("X")
+        start_ts = stream_state.get(self.cursor_field, start_date_for_replication_ts) if stream_state else start_date_for_replication_ts
+
+        yield {"start_date": start_ts}
+
+    def request_params(
+        self, stream_state: Mapping[str, Any], stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
+    ) -> MutableMapping[str, Any]:
+        params = {
+            "limit": 250,
+            "filter[created_at]": stream_slice["start_date"],
+        }
+
+        if next_page_token:
+            params.update(**next_page_token)
+
+        return params
+
+
+class Pipelines(AmocrmIncrementalStream):
+    primary_key = "id"
+
+    def path(
+        self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
+    ) -> str:
+        return "leads/pipelines"
+
+
+class Users(AmocrmIncrementalStream):
+    primary_key = "id"
+
+    def request_params(
+        self,
+        stream_state: Mapping[str, Any],
+        stream_slice: Mapping[str, Any] = None,
+        next_page_token: Mapping[str, Any] = None,
+    ) -> MutableMapping[str, Any]:
+        params = {"limit": 250, "with": "role,group"}
+
+        if next_page_token:
+            params.update(**next_page_token)
+
+        return params
+
+    def path(
+        self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
+    ) -> str:
+        return "users"
+
+
+class Tasks(AmocrmIncrementalStream):
+    primary_key = "id"
+
+    def __init__(self, config: Mapping[str, Any], **kwargs):
+        super().__init__(**kwargs)
+        self.start_date_for_replication = config["start_date_for_replication"]
+
+    def request_params(
+        self,
+        stream_state: Mapping[str, Any],
+        stream_slice: Mapping[str, Any] = None,
+        next_page_token: Mapping[str, Any] = None,
+    ) -> MutableMapping[str, Any]:
+        params = {"limit": 250, "filter[updated_at]": pendulum.parse(self.start_date_for_replication).format("X") or ""}
+
+        if next_page_token:
+            params.update(**next_page_token)
+
+        return params
+
+    def path(
+        self, stream_state: Mapping[str, Any] = None, stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
+    ) -> str:
+        return "tasks"
+
+
 # Source
 class SourceAmocrmIncremental(AbstractSource):
     refresh_endpoint = "https://hexlet.amocrm.ru/oauth2/access_token"
@@ -154,5 +274,10 @@ class SourceAmocrmIncremental(AbstractSource):
             token_refresh_endpoint=self.refresh_endpoint,
         )
         return [
+            Contacts(authenticator=auth, config=config),
             Leads(authenticator=auth, config=config),
+            Events(authenticator=auth, config=config),
+            Pipelines(authenticator=auth),
+            Users(authenticator=auth),
+            Tasks(authenticator=auth, config=config),
         ]

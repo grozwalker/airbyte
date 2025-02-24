@@ -30,22 +30,25 @@ connectionSpecification:
           description: "Enter your Amo application's Client Secret"
           airbyte_secret: true
           order: 1
-        refresh_token:
-          type: string
-          title: Refresh Token
-          description: "Enter your Amo application's refresh token"
-          airbyte_secret: true
-          order: 2
         access_token:
           type: string
           title: Access Token
           description: "Enter your Amo application's access token"
           airbyte_secret: true
+          order: 2
+        refresh_token:
+          type: string
+          title: Refresh Token
+          description: "Enter your Amo application's refresh token"
+          airbyte_secret: true
           order: 3
         token_expiry_date:
-          title: Token expire date
+          title: Token expire datetime
           type: string
-          description: "The date-time when the access token should be refreshed"
+          description: "The datetime when the access token should be refreshed"
+          pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}$"
+          pattern_descriptor: "YYYY-MM-DDTHH:MM:SS"
+          format: datetime
           order: 4
     start_date_for_replication:
       title: Start Date For Events
