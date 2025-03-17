@@ -1,14 +1,6 @@
 {
   "streams": [
-    {
-      "stream": {
-        "name": "leads",
-        "json_schema": {},
-        "supported_sync_modes": ["full_refresh", "incremental"]
-      },
-      "sync_mode": "incremental",
-      "destination_sync_mode": "overwrite"
-    },
+
     {
       "stream": {
         "name": "events",
@@ -47,11 +39,11 @@
     },
     {
       "stream": {
-        "name": "contacts",
+        "name": "leads",
         "json_schema": {},
         "supported_sync_modes": ["full_refresh"]
       },
-      "sync_mode": "full_refresh",
+      "sync_mode": "incremental",
       "destination_sync_mode": "overwrite"
     }
   ]

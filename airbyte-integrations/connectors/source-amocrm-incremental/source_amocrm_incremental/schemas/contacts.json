@@ -12,9 +12,15 @@
       "type": "string"
     },
     "last_name": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "responsible_user_id": {
+      "type": "integer"
+    },
+    "created_at": {
+      "type": "integer"
+    },
+    "updated_at": {
       "type": "integer"
     },
     "custom_fields_values": {

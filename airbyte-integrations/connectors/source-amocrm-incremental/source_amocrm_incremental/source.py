@@ -9,9 +9,10 @@ from typing import Any, Iterable, List, Mapping, MutableMapping, Optional, Tuple
 import pendulum
 import datetime
 import requests
-from airbyte_cdk.models import SyncMode
+import logging
+from airbyte_cdk.models import SyncMode, ConfiguredAirbyteCatalog, AirbyteMessage, AirbyteStateMessage, Type
 from airbyte_cdk.sources import AbstractSource
-from airbyte_cdk.sources.streams import Stream
+from airbyte_cdk.sources.streams import Stream, IncrementalMixin
 from airbyte_cdk.sources.streams.http import HttpStream
 from airbyte_cdk.sources.streams.http.requests_native_auth.oauth import SingleUseRefreshTokenOauth2Authenticator
 
@@ -19,6 +20,9 @@ from airbyte_cdk.sources.streams.http.requests_native_auth.oauth import SingleUs
 # Basic full refresh stream
 class AmocrmIncrementalStream(HttpStream, ABC):
     url_base = "https://hexlet.amocrm.ru/api/v4/"
+
+    def check_availability(self, logger: logging.Logger, source: Optional["Source"] = None) -> Tuple[bool, Optional[str]]:
+        return True, None
 
     def next_page_token(self, response: requests.Response) -> Optional[Mapping[str, Any]]:
         if response.status_code == 204:
@@ -50,28 +54,42 @@ class AmocrmIncrementalStream(HttpStream, ABC):
 
 
 # Basic incremental stream
-class IncrementalAmocrmIncrementalStream(AmocrmIncrementalStream, ABC):
+class IncrementalAmocrmIncrementalStream(AmocrmIncrementalStream, IncrementalMixin, ABC):
     # TODO: Fill in to checkpoint stream reads after N records. This prevents re-reading of data if the stream fails for any reason.
     state_checkpoint_interval = None
 
     @property
-    def cursor_field(self) -> str:
-        """
-        TODO
-        Override to return the cursor field used by this stream e.g: an API entity might always use created_at as the cursor field. This is
-        usually id or date based. This field's presence tells the framework this in an incremental stream. Required for incremental.
+    def state(self) -> Mapping[str, Any]:
+        if hasattr(self, "_state"):
+            return self._state
+        else:
+            return {}
 
-        :return str: The name of the cursor field.
-        """
-        return self.cursor_field
+    @state.setter
+    def state(self, value: Mapping[str, Any]):
+        self._state = value
 
-    def get_updated_state(self, current_stream_state: MutableMapping[str, Any], latest_record: Mapping[str, Any]) -> Mapping[str, Any]:
-        """
-        Override to determine the latest state after reading the latest record. This typically compared the cursor_field from the latest record and
-        the current state and picks the 'most' recent cursor. This is how a stream's state is determined. Required for incremental.
-        """
-        state_value = max(current_stream_state.get(self.cursor_field, 0), latest_record.get(self.cursor_field, ""))
-        return {self.cursor_field: state_value}
+    def read_records(
+        self,
+        sync_mode: SyncMode,
+        cursor_field: List[str] = None,
+        stream_slice: Mapping[str, Any] = None,
+        stream_state: Mapping[str, Any] = None,
+    ) -> Iterable[Mapping[str, Any]]:
+        for record in super().read_records(
+            sync_mode=sync_mode, cursor_field=cursor_field, stream_slice=stream_slice, stream_state=stream_state
+        ):
+          yield record
+
+          stream_state_value = self.state.get(self.cursor_field, 0)
+          self.state = {self.cursor_field: max(record[self.cursor_field], stream_state_value)}
+
+    def stream_slices(self, stream_state: Mapping[str, Any] = None, **kwargs) -> Iterable[Optional[Mapping[str, any]]]:
+      start_date_for_replication_ts = pendulum.parse(self.start_date_for_replication).format("X")
+      start_ts = stream_state.get(self.cursor_field, start_date_for_replication_ts) if stream_state else start_date_for_replication_ts
+
+      yield {"start_date": start_ts}
+
 
 
 class Leads(IncrementalAmocrmIncrementalStream):
@@ -85,33 +103,6 @@ class Leads(IncrementalAmocrmIncrementalStream):
 
     def path(self, **kwargs) -> str:
         return "leads"
-
-    def stream_slices(self, stream_state: Mapping[str, Any] = None, **kwargs) -> Iterable[Optional[Mapping[str, any]]]:
-        """
-        TODO: Optionally override this method to define this stream's slices. If slicing is not needed, delete this method.
-
-        Slices control when state is saved. Specifically, state is saved after a slice has been fully read.
-        This is useful if the API offers reads by groups or filters, and can be paired with the state object to make reads efficient. See the "concepts"
-        section of the docs for more information.
-
-        The function is called before reading any records in a stream. It returns an Iterable of dicts, each containing the
-        necessary data to craft a request for a slice. The stream state is usually referenced to determine what slices need to be created.
-        This means that data in a slice is usually closely related to a stream's cursor_field and stream_state.
-
-        An HTTP request is made for each returned slice. The same slice can be accessed in the path, request_params and request_header functions to help
-        craft that specific request.
-
-        For example, if https://example-api.com/v1/employees offers a date query params that returns data for that particular day, one way to implement
-        this would be to consult the stream state object for the last synced date, then return a slice containing each date from the last synced date
-        till now. The request_params function would then grab the date from the stream_slice and make it part of the request by injecting it into
-        the date query param.
-        """
-        # raise NotImplementedError("Implement stream slices or delete this method!")
-
-        start_date_for_replication_ts = pendulum.parse(self.start_date_for_replication).format("X")
-        start_ts = stream_state.get(self.cursor_field, start_date_for_replication_ts) if stream_state else start_date_for_replication_ts
-
-        yield {"start_date": start_ts}
 
     def request_params(
         self, stream_state: Mapping[str, Any], stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
@@ -135,24 +126,27 @@ class Events(IncrementalAmocrmIncrementalStream):
 
     def __init__(self, config: Mapping[str, Any], **kwargs):
         self.start_date_for_replication = config["start_date_for_replication"]
+        self.end_date_for_replication = config["end_date_for_replication"]
+        self.events = config.get("events")
         super().__init__(**kwargs)
 
     def path(self, **kwargs) -> str:
         return "events"
 
-    def stream_slices(self, stream_state: Mapping[str, Any] = None, **kwargs) -> Iterable[Optional[Mapping[str, any]]]:
-        start_date_for_replication_ts = pendulum.parse(self.start_date_for_replication).format("X")
-        start_ts = stream_state.get(self.cursor_field, start_date_for_replication_ts) if stream_state else start_date_for_replication_ts
-
-        yield {"start_date": start_ts}
-
     def request_params(
         self, stream_state: Mapping[str, Any], stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
     ) -> MutableMapping[str, Any]:
+        end_date_for_replication_ts = pendulum.parse(self.end_date_for_replication).format("X")
         params = {
-            "limit": 100,
-            "filter[created_at]": stream_slice["start_date"],
+            "limit": 250,
+            "filter[created_at][from]": stream_slice["start_date"],
+            "filter[created_at][to]": end_date_for_replication_ts,
         }
+
+        if self.events:
+            events = self.events.replace(" ", "").split(",")
+            for idx, event in enumerate(events):
+                params[f"filter[type][{idx}]"] = event
 
         if next_page_token:
             params.update(**next_page_token)
@@ -171,18 +165,12 @@ class Contacts(IncrementalAmocrmIncrementalStream):
     def path(self, **kwargs) -> str:
         return "contacts"
 
-    def stream_slices(self, stream_state: Mapping[str, Any] = None, **kwargs) -> Iterable[Optional[Mapping[str, any]]]:
-        start_date_for_replication_ts = pendulum.parse(self.start_date_for_replication).format("X")
-        start_ts = stream_state.get(self.cursor_field, start_date_for_replication_ts) if stream_state else start_date_for_replication_ts
-
-        yield {"start_date": start_ts}
-
     def request_params(
         self, stream_state: Mapping[str, Any], stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
     ) -> MutableMapping[str, Any]:
         params = {
             "limit": 250,
-            "filter[created_at]": stream_slice["start_date"],
+            "filter[updated_at][from]": stream_slice["start_date"],
         }
 
         if next_page_token:
@@ -222,7 +210,9 @@ class Users(AmocrmIncrementalStream):
         return "users"
 
 
-class Tasks(AmocrmIncrementalStream):
+class Tasks(IncrementalAmocrmIncrementalStream):
+    cursor_field = "updated_at"
+
     primary_key = "id"
 
     def __init__(self, config: Mapping[str, Any], **kwargs):
@@ -235,7 +225,10 @@ class Tasks(AmocrmIncrementalStream):
         stream_slice: Mapping[str, Any] = None,
         next_page_token: Mapping[str, Any] = None,
     ) -> MutableMapping[str, Any]:
-        params = {"limit": 250, "filter[updated_at]": pendulum.parse(self.start_date_for_replication).format("X") or ""}
+        params = {
+            "limit": 250,
+            "filter[updated_at]": stream_slice["start_date"],
+        }
 
         if next_page_token:
             params.update(**next_page_token)
@@ -274,9 +267,9 @@ class SourceAmocrmIncremental(AbstractSource):
             token_refresh_endpoint=self.refresh_endpoint,
         )
         return [
+            Events(authenticator=auth, config=config),
             Contacts(authenticator=auth, config=config),
             Leads(authenticator=auth, config=config),
-            Events(authenticator=auth, config=config),
             Pipelines(authenticator=auth),
             Users(authenticator=auth),
             Tasks(authenticator=auth, config=config),
