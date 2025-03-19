@@ -21,7 +21,7 @@
       "type": "string"
     },
     "utm": {
-      "type": "object"
+      "type": "string"
     }
   }
 }
