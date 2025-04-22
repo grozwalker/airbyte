@@ -140,8 +140,10 @@ class Events(IncrementalAmocrmIncrementalStream):
         params = {
             "limit": 250,
             "filter[created_at][from]": stream_slice["start_date"],
-            "filter[created_at][to]": end_date_for_replication_ts,
         }
+
+        if end_date_for_replication_ts:
+            params["filter[created_at][to]"] = end_date_for_replication_ts
 
         if self.events:
             events = self.events.replace(" ", "").split(",")
